@@ -38,25 +38,37 @@ to read emulated memory from JavaScript.
 - `data/src/achievements.js`: the `EJS_retroAchievements` option, the `retroarch.cfg` lines, the event stream,
   the "Achievements" button and popup, the unlock notification, and the "RetroAchievements" settings section
   (enable/disable and notifications).
-- `core.json` may declare `"cheevos": true`; EmulatorJS exposes it as `coreSupportsCheevos` and otherwise shows
-  "This core does not support achievements yet" in the achievements popup.
+- `core.json` declares `"cheevos": true` for cores built with achievements support; EmulatorJS exposes it as
+  `coreSupportsCheevos` and otherwise shows "This core does not support achievements yet" in the achievements popup.
 - An `achievementUnlocked` event is emitted (`EJS_emulator.on("achievementUnlocked", fn)`).
 
-## Phase 2: cores with achievements support (not done)
+## Phase 2: cores with achievements support (done for fceumm, tooling for the others)
 
-Cores are built in [EmulatorJS/build](https://github.com/EmulatorJS/build) from the EmulatorJS RetroArch fork.
+Tooling and patches: [`tools/cheevos-cores/`](../tools/cheevos-cores/README.md).
 
-1. Enable `HAVE_CHEEVOS=1` in the fork's `Makefile.emulatorjs` (it currently enables `HAVE_NETWORKING`
-   but not `HAVE_CHEEVOS`). Upstream RetroArch's `Makefile.common` compiles `deps/rcheevos` when the
-   flag is set.
-2. Check that HTTP goes through `tasks/task_http_emscripten.c` (`emscripten_fetch`) and works in both threaded and
-   non-threaded builds.
-3. Add `"cheevos": true` to `core.json` for the cores that were built this way.
-4. Check RetroArch's on-screen notifications in the WASM build. If they are disabled, rely on the proxy's event
-   stream, which EmulatorJS already uses.
-5. Start with cartridge systems whose hash is simple: NES, SNES, Game Boy, Game Boy Color, Game Boy Advance,
-   Mega Drive.
-6. Test against a real game with the proxy, then measure the per-frame cost of `rc_client_do_frame`.
+What was found and verified:
+
+- Cores are compiled separately from RetroArch; `HAVE_CHEEVOS` only affects the RetroArch link step
+  (`build-emulatorjs.sh` → `Makefile.emulatorjs`), so no core needs changes.
+- The fork's `Makefile.emulatorjs` must also pass `$(INCLUDE_DIRS)` to the compiler, otherwise
+  `deps/rcheevos/include` is missing. Both changes are in
+  [`RetroArch-Makefile.emulatorjs.patch`](../tools/cheevos-cores/patches/RetroArch-Makefile.emulatorjs.patch).
+- In the web build RetroArch sends its requests with `emscripten_async_wget2_data`: an `XMLHttpRequest` POST in
+  `application/x-www-form-urlencoded`, a "simple" CORS request (no preflight) that `ra-proxy` already accepts.
+- End-to-end test (fceumm, normal and legacy variants, Chromium): the core hashes the ROM, logs in to the proxy,
+  identifies the game, starts a session, maps the NES RAM and awards the achievement when its condition becomes
+  true. No request is simulated. Output and steps are in `tools/cheevos-cores/README.md`.
+- RetroArch's own unlock, mastery, account and summary popups work, but duplicated EmulatorJS's notification
+  and overflowed small screens, so EmulatorJS turns them off (`cheevos_visibility_*`). Leaderboard trackers and
+  challenge indicators are still drawn by RetroArch.
+
+Still to do:
+
+1. Upstream the two patches (EmulatorJS/RetroArch and EmulatorJS/build), or publish cheevos-enabled cores.
+2. Build and test the other cartridge systems with simple hashes: SNES (`snes9x`), Game Boy / Color
+   (`gambatte`), Game Boy Advance (`mgba`), Mega Drive (`genesis_plus_gx`).
+3. Test real games with a real achievement set (through the proxy, with a RetroAchievements account), and
+   measure the per-frame cost of `rc_client_do_frame`.
 
 ## Phase 3: RomM
 

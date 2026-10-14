@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!-- End-to-end test page: see tools/cheevos-cores/README.md -->
+<html><head><meta charset="utf-8"><title>Achievements e2e</title></head>
+<body style="margin:0;background:#222">
+<div style="width:800px;height:600px"><div id="game"></div></div>
+<script>
+    EJS_player = "#game";
+    EJS_core = "nes";
+    EJS_gameUrl = "../../roms/cheevos-test.nes";
+    EJS_gameName = "Cheevos Test";
+    EJS_pathtodata = "../../data/";
+    EJS_startOnLoaded = true;
+    EJS_DEBUG_XX = true;
+    EJS_retroAchievements = { proxyUrl: "http://localhost:8081", username: "alice", password: "local-pass", gameId: 1 };
+</script>
+<script src="../../data/loader.js"></script>
+</body></html>

@@ -14,9 +14,10 @@ A small self-hosted service that lets EmulatorJS earn **local, casual** RetroAch
 It is inspired by [RAOfflineProxy](https://github.com/misantronic/RAOfflineProxy), but unlike it nothing is
 ever synchronised back to RetroAchievements: this is a "mini RetroAchievements" for your own server.
 
-> **Status: prototype.** EmulatorJS cores are not yet built with achievements support (`HAVE_CHEEVOS`), so
-> achievements do not trigger in-game yet. See [docs/RETROACHIEVEMENTS.md](../docs/RETROACHIEVEMENTS.md) for
-> the roadmap. Before any public deployment, please read the "RetroAchievements rules" section below.
+> **Status: prototype.** Official EmulatorJS cores are not built with achievements support (`HAVE_CHEEVOS`);
+> build your own with [`tools/cheevos-cores/`](../tools/cheevos-cores/README.md) (verified end to end with the NES
+> core). See [docs/RETROACHIEVEMENTS.md](../docs/RETROACHIEVEMENTS.md) for the roadmap. Before any public
+> deployment, please read the "RetroAchievements rules" section below.
 
 ## Run it
 
@@ -114,5 +115,6 @@ that nothing but reads ever reaches it.
 Un petit service auto-hébergé qui joue le rôle d'un « mini RetroAchievements » local pour EmulatorJS.
 Il récupère (en lecture seule, avec cache) les définitions des succès sur retroachievements.org, et garde
 les succès débloqués **uniquement en local** : rien n'est jamais renvoyé sur RetroAchievements, et le mode
-hardcore est refusé. Les cores EmulatorJS doivent encore être recompilés avec `HAVE_CHEEVOS` pour que les
-succès se déclenchent en jeu ; voir [docs/RETROACHIEVEMENTS.md](../docs/RETROACHIEVEMENTS.md).
+hardcore est refusé. Les cores EmulatorJS officiels ne gèrent pas encore les succès : il faut les recompiler
+avec `HAVE_CHEEVOS` grâce à [`tools/cheevos-cores/`](../tools/cheevos-cores/README.md) (testé de bout en bout
+avec le core NES) ; voir [docs/RETROACHIEVEMENTS.md](../docs/RETROACHIEVEMENTS.md).

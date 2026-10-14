@@ -52,6 +52,11 @@ class EJS_Achievements {
         let cfg = "cheevos_enable = \"true\"\n" +
             "cheevos_custom_host = " + quote(this.proxyUrl) + "\n" +
             "cheevos_hardcore_mode_enable = \"false\"\n" +
+            // EmulatorJS shows its own unlock notifications; keep RetroArch's leaderboard and challenge widgets only.
+            "cheevos_visibility_unlock = \"false\"\n" +
+            "cheevos_visibility_mastery = \"false\"\n" +
+            "cheevos_visibility_account = \"false\"\n" +
+            "cheevos_visibility_summary = \"2\"\n" +
             "cheevos_username = " + quote(this.username) + "\n";
         if (this.token) {
             cfg += "cheevos_token = " + quote(this.token) + "\n";

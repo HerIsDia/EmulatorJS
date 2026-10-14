@@ -1,0 +1,38 @@
+diff --git a/Makefile.emulatorjs b/Makefile.emulatorjs
+index b5862b3..b25581e 100644
+--- a/Makefile.emulatorjs
++++ b/Makefile.emulatorjs
+@@ -48,6 +48,8 @@ HAVE_CONFIGFILE = 1
+ HAVE_COMMAND = 1
+ HAVE_STDIN_CMD ?= 1
+ HAVE_CHEATS = 1
++# RetroAchievements (rcheevos). Only active when cheevos_enable is set in retroarch.cfg.
++HAVE_CHEEVOS ?= 1
+ HAVE_IBXM = 1
+ HAVE_CORE_INFO_CACHE = 1
+ HAVE_7ZIP = 1
+@@ -131,8 +133,15 @@ EXPORTED_FUNCTIONS = _main,_malloc,_free,_load_state, \
+ 
+ EXPORTS := Browser,callMain,cwrap,getValue,HEAPU8,FS,PATH,ERRNO_CODES,AL,abort,ENV,stringToNewUTF8,UTF8ToString,Browser,EmscriptenSendCommand,EmscriptenReceiveCommandReply,EmulatorJSGetState,EmulatorJSGetMemoryData
+ 
++# HAVE_BUILTINZLIB=1 uses RetroArch's bundled zlib (deps/libz) instead of the emscripten port,
++# for build environments that cannot download emscripten ports.
++ifeq ($(HAVE_BUILTINZLIB), 1)
++LIBS   :=
++CFLAGS :=
++else
+ LIBS   := -s USE_ZLIB=1
+ CFLAGS := -s USE_ZLIB=1
++endif
+ 
+ ifeq ($(HAVE_EXTRA_WASMFS), 1)
+    LIBS += -lfetchfs.js -lopfs.js
+@@ -278,6 +287,8 @@ endif
+ include Makefile.common
+ 
+ CFLAGS += $(DEF_FLAGS) -Ideps -Ideps/stb
++# include dirs added by Makefile.common (e.g. deps/rcheevos/include when HAVE_CHEEVOS=1)
++CFLAGS += $(INCLUDE_DIRS)
+ 
+ libretro     =
+ libretro_new =
