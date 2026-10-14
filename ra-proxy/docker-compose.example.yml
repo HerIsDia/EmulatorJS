@@ -1,0 +1,27 @@
+# Example: run the local RetroAchievements proxy next to EmulatorJS (or RomM).
+services:
+  ra-proxy:
+    build: .
+    # image: ghcr.io/<you>/ejs-ra-proxy:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      # RetroAchievements account used ONLY to download achievement definitions (read-only).
+      # Prefer RA_TOKEN (the "Connect" token); RA_PASSWORD is used once to obtain it otherwise.
+      RA_USERNAME: "your-ra-username"
+      RA_PASSWORD: "your-ra-password"
+      # RA_TOKEN: ""
+      # Local players (name:password, comma separated). Empty = open mode (trusted LAN only).
+      LOCAL_USERS: "alice:change-me"
+      # Origins allowed to call the proxy from the browser (comma separated, "*" for any).
+      ALLOWED_ORIGINS: "http://localhost:8000"
+      # Public URL of the proxy as seen by the browser (used for badge URLs). Optional.
+      # PUBLIC_URL: "https://romm.example.com/ra-proxy"
+      # ROOT_PATH: "/ra-proxy"          # when served under a sub-path by a reverse proxy
+      # OFFLINE: "true"                 # never contact retroachievements.org, cache only
+      # CACHE_TTL_HOURS: "24"
+      # ROMM_URL: "http://romm:8080"    # optional, resolve ROM hashes through RomM
+      # ROMM_TOKEN: ""

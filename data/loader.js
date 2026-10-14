@@ -168,6 +168,7 @@ const config = {
     cacheConfig: window.EJS_cacheConfig,
     cheats: window.EJS_cheats,
     cheatPath: window.EJS_cheatPath,
+    retroAchievements: window.EJS_retroAchievements,
     defaultOptions: window.EJS_defaultOptions,
     gamePatchUrl: window.EJS_gamePatchUrl,
     gameParentUrl: window.EJS_gameParentUrl,

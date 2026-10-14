@@ -1021,6 +1021,10 @@ class EJS_Frontend {
         const cheatMenu = addButton(this.ejs.config.buttonOpts.cheat, () => {
             this.cheatMenu.style.display = "";
         });
+        const achievementsMenu = addButton(this.ejs.config.buttonOpts.retroAchievements, () => {
+            this.openAchievementsMenu();
+        });
+        if (!this.ejs.achievements || !this.ejs.achievements.isActive()) achievementsMenu.style.display = "none";
 
         const cache = addButton(this.ejs.config.buttonOpts.cacheManager, () => {
             this.openCacheMenu();
@@ -1301,6 +1305,7 @@ class EJS_Frontend {
             loadState: [loadState],
             gamepad: [controlMenu],
             cheat: [cheatMenu],
+            retroAchievements: [achievementsMenu],
             cacheManager: [cache],
             saveSavFiles: [saveSavFiles],
             loadSavFiles: [loadSavFiles],
@@ -1333,6 +1338,7 @@ class EJS_Frontend {
             if (this.ejs.config.buttonOpts.loadSavFiles.visible === false) loadSavFiles.style.display = "none";
             if (this.ejs.config.buttonOpts.gamepad.visible === false) controlMenu.style.display = "none";
             if (this.ejs.config.buttonOpts.cheat.visible === false) cheatMenu.style.display = "none";
+            if (this.ejs.config.buttonOpts.retroAchievements.visible === false) achievementsMenu.style.display = "none";
             if (this.ejs.config.buttonOpts.cacheManager.visible === false) cache.style.display = "none";
             if (this.ejs.config.buttonOpts.netplay.visible === false) netplay.style.display = "none";
             if (this.ejs.config.buttonOpts.diskButton.visible === false) diskButton[0].style.display = "none";
@@ -1361,6 +1367,7 @@ class EJS_Frontend {
             loadSavFiles.style.display = "none";
             controlMenu.style.display = "none";
             cheatMenu.style.display = "none";
+            achievementsMenu.style.display = "none";
             cache.style.display = "none";
             netplay.style.display = "none";
             diskButton[0].style.display = "none";
@@ -3703,6 +3710,19 @@ class EJS_Frontend {
             }
         }
 
+        if (this.ejs.achievements && this.ejs.achievements.enabled) {
+            const achievementOpts = createSettingParent(true, "RetroAchievements", home);
+            addToMenu(this.localization("Achievements") + " (" + this.localization("Requires restart") + ")", "retroachievements", {
+                "enabled": this.localization("Enabled"),
+                "disabled": this.localization("Disabled")
+            }, "enabled", achievementOpts, true);
+            addToMenu(this.localization("Achievement notifications"), "retroachievements-notifications", {
+                "enabled": this.localization("Enabled"),
+                "disabled": this.localization("Disabled")
+            }, this.ejs.achievements.defaultNotifications ? "enabled" : "disabled", achievementOpts, true);
+            checkForEmptyMenu(achievementOpts);
+        }
+
         if (this.ejs.saveInBrowserSupported()) {
             const saveStateOpts = createSettingParent(true, "Save States", home);
             addToMenu(this.localization("Save State Slot"), "save-state-slot", ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1", saveStateOpts, true);
@@ -3855,6 +3875,96 @@ class EJS_Frontend {
         if (hidden) popup.setAttribute("hidden", "");
         popup.appendChild(popupMsg);
         return [popup, popupMsg];
+    }
+    showAchievementToast(achievement) {
+        if (!this.achievementToasts) {
+            this.achievementToasts = this.ejs.createElement("div");
+            this.achievementToasts.classList.add("ejs_achievement_toasts");
+            this.elements.parent.appendChild(this.achievementToasts);
+        }
+        const toast = this.ejs.createElement("div");
+        toast.classList.add("ejs_achievement_toast");
+        if (achievement.badgeUrl) {
+            const img = this.ejs.createElement("img");
+            img.src = achievement.badgeUrl;
+            img.alt = "";
+            toast.appendChild(img);
+        }
+        const text = this.ejs.createElement("div");
+        const heading = this.ejs.createElement("div");
+        heading.classList.add("ejs_achievement_toast_heading");
+        heading.innerText = this.localization("Achievement unlocked");
+        const title = this.ejs.createElement("strong");
+        title.innerText = achievement.title + (achievement.points ? " (" + achievement.points + ")" : "");
+        const desc = this.ejs.createElement("div");
+        desc.innerText = achievement.description || "";
+        text.appendChild(heading);
+        text.appendChild(title);
+        text.appendChild(desc);
+        toast.appendChild(text);
+        this.achievementToasts.appendChild(toast);
+        setTimeout(() => toast.classList.add("ejs_achievement_toast_hide"), 5000);
+        setTimeout(() => toast.remove(), 5600);
+    }
+    async openAchievementsMenu() {
+        const achievements = this.ejs.achievements;
+        if (!achievements || !achievements.enabled) return;
+        const body = this.createPopup("Achievements", {
+            "Close": () => this.closePopup()
+        });
+        body.classList.add("ejs_achievements_body");
+        const note = this.ejs.createElement("div");
+        note.classList.add("ejs_achievements_note");
+        note.innerText = this.localization("Achievements are stored locally and are not sent to RetroAchievements.org");
+        body.appendChild(note);
+        if (!achievements.coreSupported()) {
+            const warn = this.ejs.createElement("div");
+            warn.classList.add("ejs_achievements_note");
+            warn.innerText = this.localization("This core does not support achievements yet");
+            body.appendChild(warn);
+        }
+        const status = this.ejs.createElement("div");
+        status.innerText = this.localization("Loading...");
+        body.appendChild(status);
+
+        let data;
+        try {
+            data = await achievements.fetchGame();
+        } catch (e) {
+            if (this.ejs.debug) console.warn("[EJS Achievements]", e);
+            status.innerText = this.localization("Could not connect to the achievements server");
+            return;
+        }
+        if (!data || data.achievements.length === 0) {
+            status.innerText = this.localization("No achievements found for this game");
+            return;
+        }
+        status.classList.add("ejs_achievements_summary");
+        status.innerText = data.game.title + " - " + data.summary.unlocked + " / " + data.summary.total + " (" +
+            data.summary.pointsUnlocked + " / " + data.summary.points + " " + this.localization("points") + ")";
+
+        const rows = this.ejs.createElement("div");
+        rows.classList.add("ejs_achievements_rows");
+        for (const achievement of data.achievements) {
+            const row = this.ejs.createElement("div");
+            row.classList.add("ejs_achievement_row");
+            if (!achievement.unlocked) row.classList.add("ejs_achievement_locked");
+            const img = this.ejs.createElement("img");
+            img.src = achievement.unlocked ? achievement.badgeUrl : achievement.badgeLockedUrl;
+            img.alt = "";
+            img.loading = "lazy";
+            const text = this.ejs.createElement("div");
+            const title = this.ejs.createElement("strong");
+            title.innerText = achievement.title + " (" + achievement.points + ")";
+            const desc = this.ejs.createElement("div");
+            desc.innerText = achievement.description;
+            text.appendChild(title);
+            text.appendChild(desc);
+            row.appendChild(img);
+            row.appendChild(text);
+            rows.appendChild(row);
+        }
+        body.appendChild(rows);
     }
     createCheatsMenu() {
         const body = this.createPopup(

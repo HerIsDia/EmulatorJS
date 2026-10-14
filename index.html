@@ -426,6 +426,8 @@
                     window.EJS_browserMode = browserMode;
                 }
                 window.EJS_askBeforeExit = false;
+                // Optional: achievements through a local RetroAchievements proxy (see ra-proxy/README.md)
+                // window.EJS_retroAchievements = { proxyUrl: "http://localhost:8080", username: "alice", password: "change-me", gameId: 1 };
                 window.EJS_onExit = () => {
                         alert("The emulator has exited. This callback can be used to do any cleanup or show a message to the user.");
                     };

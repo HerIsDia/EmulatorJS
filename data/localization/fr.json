@@ -336,5 +336,14 @@
     "Menu Bar Button": "Bouton de la barre de menu",
     "visible": "visible",
     "hidden": "masqué",
-    "Autofire": "Autofire"
+    "Autofire": "Autofire",
+    "Achievements": "Succès",
+    "RetroAchievements": "RetroAchievements",
+    "Achievement unlocked": "Succès débloqué",
+    "Achievement notifications": "Notifications de succès",
+    "Achievements are stored locally and are not sent to RetroAchievements.org": "Les succès sont stockés localement et ne sont pas envoyés à RetroAchievements.org",
+    "This core does not support achievements yet": "Ce core ne prend pas encore en charge les succès",
+    "Could not connect to the achievements server": "Impossible de se connecter au serveur de succès",
+    "No achievements found for this game": "Aucun succès trouvé pour ce jeu",
+    "points": "points"
 }

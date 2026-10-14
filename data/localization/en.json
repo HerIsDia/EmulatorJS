@@ -336,5 +336,14 @@
     "Menu Bar Button": "Menu Bar Button",
     "visible": "visible",
     "hidden": "hidden",
-    "Autofire": "Autofire"
+    "Autofire": "Autofire",
+    "Achievements": "Achievements",
+    "RetroAchievements": "RetroAchievements",
+    "Achievement unlocked": "Achievement unlocked",
+    "Achievement notifications": "Achievement notifications",
+    "Achievements are stored locally and are not sent to RetroAchievements.org": "Achievements are stored locally and are not sent to RetroAchievements.org",
+    "This core does not support achievements yet": "This core does not support achievements yet",
+    "Could not connect to the achievements server": "Could not connect to the achievements server",
+    "No achievements found for this game": "No achievements found for this game",
+    "points": "points"
 }
