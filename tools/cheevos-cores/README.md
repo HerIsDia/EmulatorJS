@@ -41,7 +41,9 @@ EmulatorJS only does when `EJS_retroAchievements` is configured.
 3. `python3 serve.py 8000` from the repository root, with the `fceumm` cores built above in `data/cores/`
    (and `data/cores/reports/fceumm.json`).
 4. `node tools/cheevos-cores/e2e.cjs` (Playwright) opens [`e2e.html`](e2e.html) and waits until the core
-   itself awards achievement 101: no request is simulated.
+   itself awards achievement 101: no request is simulated. Pass
+   `http://localhost:8000/tools/cheevos-cores/e2e.html?threads=1` as first argument to test the threaded cores.
+   The proxy keeps unlocks, so restart it (fresh data dir) between runs.
 
 Expected output:
 

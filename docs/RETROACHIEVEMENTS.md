@@ -55,7 +55,8 @@ What was found and verified:
   [`RetroArch-Makefile.emulatorjs.patch`](../tools/cheevos-cores/patches/RetroArch-Makefile.emulatorjs.patch).
 - In the web build RetroArch sends its requests with `emscripten_async_wget2_data`: an `XMLHttpRequest` POST in
   `application/x-www-form-urlencoded`, a "simple" CORS request (no preflight) that `ra-proxy` already accepts.
-- End-to-end test (fceumm, normal and legacy variants, Chromium): the core hashes the ROM, logs in to the proxy,
+- End-to-end test (fceumm built by `build-cheevos-core.sh` from a clean checkout; single-threaded and threaded,
+  legacy variants, Chromium): the core hashes the ROM, logs in to the proxy,
   identifies the game, starts a session, maps the NES RAM and awards the achievement when its condition becomes
   true. No request is simulated. Output and steps are in `tools/cheevos-cores/README.md`.
 - RetroArch's own unlock, mastery, account and summary popups work, but duplicated EmulatorJS's notification

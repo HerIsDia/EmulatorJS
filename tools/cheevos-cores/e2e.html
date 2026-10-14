@@ -11,6 +11,7 @@
     EJS_pathtodata = "../../data/";
     EJS_startOnLoaded = true;
     EJS_DEBUG_XX = true;
+    EJS_threads = new URLSearchParams(location.search).get("threads") === "1"; // e2e.html?threads=1
     EJS_retroAchievements = { proxyUrl: "http://localhost:8081", username: "alice", password: "local-pass", gameId: 1 };
 </script>
 <script src="../../data/loader.js"></script>
